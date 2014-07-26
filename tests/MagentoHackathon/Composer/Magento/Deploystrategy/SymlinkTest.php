@@ -45,12 +45,13 @@ class SymlinkTest extends AbstractTest
         touch($wrongFile);
         touch($rightFile);
         @unlink($link);
-
         symlink($wrongFile, $link);
+
         $this->assertEquals($wrongFile, readlink($link));
 
         $this->strategy->create(basename($rightFile), basename($link));
-        $this->assertEquals(realpath($rightFile), realpath(dirname($rightFile) . DS . readlink($link)));
+
+        $this->assertEquals($rightFile, readlink($link));
     }
 
     public function testTargetDirWithChildDirExists()
@@ -106,13 +107,13 @@ class SymlinkTest extends AbstractTest
         $this->mkdir($this->sourceDir . $directory);
         touch($this->sourceDir . $file);
         $this->strategy->setMappings(array(array($file, $file)));
-        
+
         $this->strategy->deploy();
-        
+
         $this->assertFileExists($this->destDir . $file);
 
         $this->strategy->clean();
-        
+
         $this->assertFileNotExists($this->destDir . $file);
         $this->assertFileNotExists($this->destDir . $directory);
     }
