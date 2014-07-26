@@ -428,12 +428,20 @@ abstract class DeploystrategyAbstract
     {
         $fs = new \Composer\Util\Filesystem();
         if(is_dir($dir)){
-            $result = $fs->removeDirectory(rtrim($dir,'/'));
+            // Filesystem::removeDirectory() has a problem with trailing slashes on
+            // pathnames that are symlinked directories.
+            // https://github.com/composer/composer/issues/3144
+            $dirWithoutTrailingSlashes = self::removeTrailingSlashes($dir);
+            $fs->removeDirectory($dirWithoutTrailingSlashes);
         }else{
             @unlink($dir);
         }
 
         return;
+    }
+
+    protected static function removeTrailingSlashes($path) {
+        return rtrim($path, '\/');
     }
 
 
